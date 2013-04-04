@@ -2597,7 +2597,7 @@ var filters = {
         return pre + str + post;
     },
 
-    default: function(val, def) {
+    'default': function(val, def) {
         return val ? val : def;
     },
 
@@ -2837,7 +2837,7 @@ var filters = {
 };
 
 // Aliases
-filters.d = filters.default;
+filters.d = filters['default'];
 filters.e = filters.escape;
 
 modules['filters'] = filters;

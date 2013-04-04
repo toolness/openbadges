@@ -93,8 +93,8 @@ var OpenBadges = (function() {
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
       }).appendTo(document.body);
       var iframe = document.createElement("iframe");
-      // add Date.now() to aggressively cache-bust.
-      var url = root + "issuer/frame?" + Date.now();
+      // add timestamp to aggressively cache-bust.
+      var url = root + "issuer/frame?" + (new Date().getTime());
       iframe.setAttribute("src", url);
       iframe.setAttribute("scrolling", "no");
       var baseStyles = {
