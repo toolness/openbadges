@@ -134,11 +134,12 @@ var OpenBadges = (function() {
     issue_no_modal: function OpenBadges_issue_no_modal(assertions) {
       assertions = typeof assertions === 'string' ? [assertions] : assertions;
       var root = this.getRoot();
-      var url = root + "issuer/frameless?" + Date.now();
+      var url = root + "issuer/frameless?" + (new Date().getTime());
       var form = $('<form method="POST"></form>').attr('action', url).appendTo($('body')).hide();
-      assertions.forEach(function(val, i, arr){
+      for (var i = 0; i < assertions.length; i++) {
+        var val = assertions[i];
         $('<input type="text" name="assertions">').val(val).appendTo(form);
-      });
+      }
       form.submit();
     }
   };
