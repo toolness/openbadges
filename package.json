@@ -37,7 +37,8 @@
     "messina": "~0.1.0",
     "gelf-stream": "~0.2.2",
     "request": "~2.27.0",
-    "node-statsd": "~0.0.7"
+    "node-statsd": "~0.0.7",
+    "webmaker-i18n": "mozilla/node-webmaker-i18n"
   },
   "engines": {
     "node": ">=0.8"

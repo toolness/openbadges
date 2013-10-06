@@ -16,6 +16,7 @@ var configuration = require('./lib/configuration');
 var flash = require('connect-flash');
 var nunjucks = require('nunjucks');
 var _ = require('underscore');
+var i18n = require('webmaker-i18n');
 
 var app = express();
 app.logger = logger;
@@ -36,6 +37,13 @@ app.set('useCompiledTemplates', configuration.get('nunjucks_precompiled'));
 var env = new nunjucks.Environment(new nunjucks.FileSystemLoader(__dirname + '/views'));
 env.express(app);
 
+// add filter 'instantiate' which makes client template translating
+// possible
+nunjucksEnv.addFilter("instantiate", function(input) {
+    var tmpl = new nunjucks.Template(input);
+    return tmpl.render(this.getVariables());
+});
+
 env.addFilter('formatdate', function (rawDate) {
   if (parseInt(rawDate, 10) == rawDate) {
     var date = new Date(rawDate * 1000);
@@ -50,6 +58,15 @@ app.use(middleware.less(app.get('env')));
 app.use(express.static(path.join(__dirname, "static")));
 app.use("/views", express.static(path.join(__dirname, "views")));
 app.use(middleware.staticTemplateViews(env, 'static/'));
+
+app.use(i18n.middleware({
+  supported_languages: [
+    'en-US'
+  ],
+  default_lang: 'en-US',
+  translation_directory: path.join(__dirname, "locale")
+}));
+
 app.use(middleware.noFrame({ whitelist: [ '/issuer/frame.*', '/', '/share/.*' ] }));
 app.use(express.bodyParser());
 app.use(express.cookieParser());
