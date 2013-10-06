@@ -39,7 +39,7 @@ env.express(app);
 
 // add filter 'instantiate' which makes client template translating
 // possible
-nunjucksEnv.addFilter("instantiate", function(input) {
+env.addFilter("instantiate", function(input) {
     var tmpl = new nunjucks.Template(input);
     return tmpl.render(this.getVariables());
 });
