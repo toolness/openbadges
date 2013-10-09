@@ -16,6 +16,8 @@ var configuration = require('./lib/configuration');
 var flash = require('connect-flash');
 var nunjucks = require('nunjucks');
 var _ = require('underscore');
+var i18n = require('webmaker-i18n');
+
 
 var app = express();
 app.logger = logger;
@@ -36,6 +38,14 @@ app.set('useCompiledTemplates', configuration.get('nunjucks_precompiled'));
 var env = new nunjucks.Environment(new nunjucks.FileSystemLoader(__dirname + '/views'));
 env.express(app);
 
+// This filter intended to be used when there is a variable in the
+// messages.json and it will re-render the return value again before
+// it will be display on the page.
+env.addFilter("instantiate", function(input) {
+  var tmpl = new nunjucks.Template(input);
+  return tmpl.render(this.getVariables());
+});
+
 env.addFilter('formatdate', function (rawDate) {
   if (parseInt(rawDate, 10) == rawDate) {
     var date = new Date(rawDate * 1000);
@@ -50,6 +60,18 @@ app.use(middleware.less(app.get('env')));
 app.use(express.static(path.join(__dirname, "static")));
 app.use("/views", express.static(path.join(__dirname, "views")));
 app.use(middleware.staticTemplateViews(env, 'static/'));
+app.use( "/bower", express.static( path.join(__dirname, "bower_components" )));
+
+// Setup locales with i18n
+app.use( i18n.middleware({
+  supported_languages: ["en-US"],
+  default_lang: "en-US",
+  mappings: {
+    'en': 'en-US'
+  },
+  translation_directory: path.resolve( __dirname, "locale" )
+}));
+
 app.use(middleware.noFrame({ whitelist: [ '/issuer/frame.*', '/', '/share/.*' ] }));
 app.use(express.bodyParser());
 app.use(express.cookieParser());
@@ -167,6 +189,9 @@ app.post('/api/issue', backpackConnect.authorize("issue"),
                        issuer.issuerBadgeAddFromAssertion);
 app.get('/api/identity', backpackConnect.authorize("issue"),
                          backpackConnect.hashIdentity());
+
+// Setting up a route for the client-side usage
+app.get('/strings/:lang?', i18n.stringsRoute('en-US'));
 
 if (!module.parent) {
   var start_server = function start_server(app) {

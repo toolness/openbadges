@@ -1,4 +1,4 @@
-!!function setup () {
+function setup () {
 
 var CSRF = $("input[name='_csrf']").val();
 $.ajaxSetup({
@@ -16,7 +16,8 @@ if(!nunjucks.env) {
 if (!nunjucks.env.globals)
   nunjucks.env.globals = {};
 $.extend(nunjucks.env.globals, {
-  csrfToken: CSRF
+  csrfToken: CSRF,
+  removeThisBadge: Localized.get("remove this badge")
 });
 nunjucks.env.addFilter('formatdate', function (rawDate) {
   if (parseInt(rawDate, 10) == rawDate) {
@@ -25,10 +26,9 @@ nunjucks.env.addFilter('formatdate', function (rawDate) {
   }
   return rawDate;
 });
-}(/*end setup*/)
+}
 
-
-!!function appInitialize (){
+function appInitialize (){
 
 var global = {
   dragging: false
@@ -58,6 +58,13 @@ var errHandler = function (model, xhr) {
  * Nunjucks template helper
  */
 var template = function template(name, data) {
+  // Initialize the localized and wait till the DOM ready to use the getter method
+    Localized.ready(function(){
+      // Assign the value from the messages.json into the data object
+      // so that we can use it later in the client-side template in nunjucks
+      data.removeThisBadge = Localized.get("remove this badge");
+      console.log(data)
+    });
     return $(nunjucks.env.render(name, $.extend(data, nunjucks.env.globals)));
 }
 
@@ -601,4 +608,12 @@ _.each(existingGroups, Group.fromElement);
 
 window.Badge = Badge;
 //end app scope
-}();
+}
+
+// The DOM needs to be ready in order to use the Localized.get()
+// therefore we need to call the setup() and appInitialize() after
+// the DOM is ready.
+Localized.ready(function(){
+  setup();
+  appInitialize();
+});
