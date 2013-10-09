@@ -1,4 +1,4 @@
-!!function setup () {
+function setup () {
 
 var CSRF = $("input[name='_csrf']").val();
 $.ajaxSetup({
@@ -16,8 +16,12 @@ if(!nunjucks.env) {
 if (!nunjucks.env.globals)
   nunjucks.env.globals = {};
 $.extend(nunjucks.env.globals, {
-  csrfToken: CSRF
+  csrfToken: CSRF,
+  removeThisBadge: Localized.get("remove this badge"),
+  needToReconnect: Localized.get("need to reconnect")
+
 });
+
 nunjucks.env.addFilter('formatdate', function (rawDate) {
   if (parseInt(rawDate, 10) == rawDate) {
     var date = new Date(rawDate * 1000);
@@ -25,10 +29,9 @@ nunjucks.env.addFilter('formatdate', function (rawDate) {
   }
   return rawDate;
 });
-}(/*end setup*/)
+}
 
-
-!!function appInitialize (){
+function appInitialize (){
 
 var global = {
   dragging: false
@@ -58,6 +61,13 @@ var errHandler = function (model, xhr) {
  * Nunjucks template helper
  */
 var template = function template(name, data) {
+    // This filter intended to be used when there is a variable in the
+    // messages.json and it will re-render the return value again before
+    // it will be display on the page.
+    nunjucks.env.addFilter("instantiate", function (input) {
+      var tmpl = new nunjucks.Template(input);
+      return tmpl.render(data);
+    });
     return $(nunjucks.env.render(name, $.extend(data, nunjucks.env.globals)));
 }
 
@@ -601,4 +611,12 @@ _.each(existingGroups, Group.fromElement);
 
 window.Badge = Badge;
 //end app scope
-}();
+}
+
+// The DOM needs to be ready in order to use the Localized.get()
+// therefore we need to call the setup() and appInitialize() after
+// the DOM is ready.
+Localized.ready(function(){
+  setup();
+  appInitialize();
+});
