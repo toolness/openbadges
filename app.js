@@ -42,6 +42,13 @@ env.express(app);
 env.addFilter("instantiate", function(input) {
     var tmpl = new nunjucks.Template(input);
     return tmpl.render(this.getVariables());
+
+// This filter intended to be used when there is a variable in the
+// messages.json and it will re-render the return value again before
+// it will be display on the page.
+env.addFilter("instantiate", function(input) {
+  var tmpl = new nunjucks.Template(input);
+  return tmpl.render(this.getVariables());
 });
 
 env.addFilter('formatdate', function (rawDate) {
@@ -65,7 +72,9 @@ app.use(i18n.middleware({
   ],
   default_lang: 'en-US',
   translation_directory: path.join(__dirname, "locale")
-}));
+});
+
+app.use( "/bower", express.static( path.join(__dirname, "bower_components" )));
 
 app.use(middleware.noFrame({ whitelist: [ '/issuer/frame.*', '/', '/share/.*' ] }));
 app.use(express.bodyParser());
@@ -184,6 +193,9 @@ app.post('/api/issue', backpackConnect.authorize("issue"),
                        issuer.issuerBadgeAddFromAssertion);
 app.get('/api/identity', backpackConnect.authorize("issue"),
                          backpackConnect.hashIdentity());
+
+// Setting up a route for the client-side usage
+app.get('/strings/:lang?', i18n.stringsRoute('en-US'));
 
 if (!module.parent) {
   var start_server = function start_server(app) {
