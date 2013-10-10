@@ -9,12 +9,12 @@
       <div class='confirm-disown'>
         <p> {{removeThisBadge}}
            </p>
-          <p> If so, you'd need to reconnect with the issuer (<a href='{{badge.attributes.body.badge.issuer.origin|e}}'>{{badge.attributes.body.badge.issuer.name|e}}</a>) to have this badge sent to your Backpack again.
+          <p> {{needToReconnect | instantiate }}
         </p>
 
         <div class='buttons'>
-          <button class='btn nope'>Cancel</button>
-          <button class='btn yep btn-danger'>Yes</button>
+          <button class='btn nope'>{{Cancel}}</button>
+          <button class='btn yep btn-danger'>{{Yes}}</button>
         </div>
       </div>
 

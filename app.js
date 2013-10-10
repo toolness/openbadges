@@ -18,6 +18,7 @@ var nunjucks = require('nunjucks');
 var _ = require('underscore');
 var i18n = require('webmaker-i18n');
 
+
 var app = express();
 app.logger = logger;
 app.config = configuration;
@@ -59,16 +60,17 @@ app.use(middleware.less(app.get('env')));
 app.use(express.static(path.join(__dirname, "static")));
 app.use("/views", express.static(path.join(__dirname, "views")));
 app.use(middleware.staticTemplateViews(env, 'static/'));
-
-app.use(i18n.middleware({
-  supported_languages: [
-    'en-US'
-  ],
-  default_lang: 'en-US',
-  translation_directory: path.join(__dirname, "locale")
-}));
-
 app.use( "/bower", express.static( path.join(__dirname, "bower_components" )));
+
+// Setup locales with i18n
+app.use( i18n.middleware({
+  supported_languages: ["en-US"],
+  default_lang: "en-US",
+  mappings: {
+    'en': 'en-US'
+  },
+  translation_directory: path.resolve( __dirname, "locale" )
+}));
 
 app.use(middleware.noFrame({ whitelist: [ '/issuer/frame.*', '/', '/share/.*' ] }));
 app.use(express.bodyParser());

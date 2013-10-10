@@ -17,8 +17,12 @@ if (!nunjucks.env.globals)
   nunjucks.env.globals = {};
 $.extend(nunjucks.env.globals, {
   csrfToken: CSRF,
-  removeThisBadge: Localized.get("remove this badge")
+  removeThisBadge: Localized.get("remove this badge"),
+  needToReconnect: Localized.get("need to reconnect"),
+  Cancel: Localized.get("Cancel"),
+  Yes: Localized.get("Yes")
 });
+
 nunjucks.env.addFilter('formatdate', function (rawDate) {
   if (parseInt(rawDate, 10) == rawDate) {
     var date = new Date(rawDate * 1000);
@@ -58,12 +62,12 @@ var errHandler = function (model, xhr) {
  * Nunjucks template helper
  */
 var template = function template(name, data) {
-  // Initialize the localized and wait till the DOM ready to use the getter method
-    Localized.ready(function(){
-      // Assign the value from the messages.json into the data object
-      // so that we can use it later in the client-side template in nunjucks
-      data.removeThisBadge = Localized.get("remove this badge");
-      console.log(data)
+    // This filter intended to be used when there is a variable in the
+    // messages.json and it will re-render the return value again before
+    // it will be display on the page.
+    nunjucks.env.addFilter("instantiate", function (input) {
+      var tmpl = new nunjucks.Template(input);
+      return tmpl.render(data);
     });
     return $(nunjucks.env.render(name, $.extend(data, nunjucks.env.globals)));
 }
