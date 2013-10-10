@@ -37,12 +37,6 @@ app.set('useCompiledTemplates', configuration.get('nunjucks_precompiled'));
 var env = new nunjucks.Environment(new nunjucks.FileSystemLoader(__dirname + '/views'));
 env.express(app);
 
-// add filter 'instantiate' which makes client template translating
-// possible
-env.addFilter("instantiate", function(input) {
-    var tmpl = new nunjucks.Template(input);
-    return tmpl.render(this.getVariables());
-
 // This filter intended to be used when there is a variable in the
 // messages.json and it will re-render the return value again before
 // it will be display on the page.
@@ -72,7 +66,7 @@ app.use(i18n.middleware({
   ],
   default_lang: 'en-US',
   translation_directory: path.join(__dirname, "locale")
-});
+}));
 
 app.use( "/bower", express.static( path.join(__dirname, "bower_components" )));
 
