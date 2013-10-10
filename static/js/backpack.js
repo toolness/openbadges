@@ -17,8 +17,11 @@ if (!nunjucks.env.globals)
   nunjucks.env.globals = {};
 $.extend(nunjucks.env.globals, {
   csrfToken: CSRF,
-  removeThisBadge: Localized.get("remove this badge")
+  removeThisBadge: Localized.get("remove this badge"),
+  needToReconnect: Localized.get("need to reconnect")
+
 });
+
 nunjucks.env.addFilter('formatdate', function (rawDate) {
   if (parseInt(rawDate, 10) == rawDate) {
     var date = new Date(rawDate * 1000);
@@ -64,8 +67,15 @@ var template = function template(name, data) {
       // so that we can use it later in the client-side template in nunjucks
       data.removeThisBadge = Localized.get("remove this badge");
       console.log(data)
+      // This filter intended to be used when there is a variable in the
+      // messages.json and it will re-render the return value again before
+      // it will be display on the page.
+      nunjucks.env.addFilter("instantiate", function (input) {
+        var tmpl = new nunjucks.Template(input);
+        return tmpl.render(data);
+      });
+      return $(nunjucks.env.render(name, $.extend(data, nunjucks.env.globals)));
     });
-    return $(nunjucks.env.render(name, $.extend(data, nunjucks.env.globals)));
 }
 
 // Model Definitions
@@ -80,9 +90,9 @@ Badge.Model = Backbone.Model.extend({
       // new Date(year, month [, date [, hours[, minutes[, seconds[, ms]]]]])
       return new Date(parts[0], parts[1]-1, parts[2]); // months are 0-based
     }
-    
+
     var expiry = parseDate(this.attributes.body.expires).getTime();
-    
+
     return Date.now() - expiry > 0;
   }
 });
@@ -407,9 +417,9 @@ Details.View = Backbone.View.extend({
   },
 
   render: function () {
-    this.el = template('badge-details.html', { 
-      badge: { 
-        attributes: this.model.attributes 
+    this.el = template('badge-details.html', {
+      badge: {
+        attributes: this.model.attributes
       },
       disownable: true
     });

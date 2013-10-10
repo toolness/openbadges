@@ -70,6 +70,16 @@ app.use(i18n.middleware({
 
 app.use( "/bower", express.static( path.join(__dirname, "bower_components" )));
 
+// Setup locales with i18n
+app.use( i18n.middleware({
+  supported_languages: ["en-US"],
+  default_lang: "en-US",
+  mappings: {
+    'en': 'en-US'
+  },
+  translation_directory: path.resolve( __dirname, "locale" )
+}));
+
 app.use(middleware.noFrame({ whitelist: [ '/issuer/frame.*', '/', '/share/.*' ] }));
 app.use(express.bodyParser());
 app.use(express.cookieParser());
