@@ -18,8 +18,9 @@ if (!nunjucks.env.globals)
 $.extend(nunjucks.env.globals, {
   csrfToken: CSRF,
   removeThisBadge: Localized.get("remove this badge"),
-  needToReconnect: Localized.get("need to reconnect")
-
+  needToReconnect: Localized.get("need to reconnect"),
+  Cancel: Localized.get("Cancel"),
+  Yes: Localized.get("Yes")
 });
 
 nunjucks.env.addFilter('formatdate', function (rawDate) {
