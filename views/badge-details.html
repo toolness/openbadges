@@ -7,14 +7,14 @@
     <div class='body'>
 
       <div class='confirm-disown'>
-        <p> {{removeThisBadge}}
+        <p> {{ "remove this badge" | gettext }}
         </p>
-        <p> {{needToReconnect | instantiate }}
+        <p> {{ "need to reconnect" | gettext | instantiate }}
         </p>
 
         <div class='buttons'>
-          <button class='btn nope'>{{Cancel}}</button>
-          <button class='btn yep btn-danger'>{{Yes}}</button>
+          <button class='btn nope'>{{ "Cancel" | gettext }}</button>
+          <button class='btn yep btn-danger'>{{ "Yes" | gettext }}</button>
         </div>
       </div>
 

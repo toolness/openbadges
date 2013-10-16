@@ -59,15 +59,6 @@ app.use(middleware.less(app.get('env')));
 app.use(express.static(path.join(__dirname, "static")));
 app.use("/views", express.static(path.join(__dirname, "views")));
 app.use(middleware.staticTemplateViews(env, 'static/'));
-
-app.use(i18n.middleware({
-  supported_languages: [
-    'en-US'
-  ],
-  default_lang: 'en-US',
-  translation_directory: path.join(__dirname, "locale")
-}));
-
 app.use( "/bower", express.static( path.join(__dirname, "bower_components" )));
 
 // Setup locales with i18n

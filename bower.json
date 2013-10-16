@@ -1,5 +1,5 @@
 {
-  "name": "http://openbadges.org/",
+  "name": "openbadges",
   "dependencies": {
     "webmaker-i18n": "https://github.com/mozilla/node-webmaker-i18n/archive/v0.2.3.tar.gz"
   }
