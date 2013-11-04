@@ -23,6 +23,16 @@ nunjucks.env.addFilter('gettext', function (data) {
   return Localized.get(data);
 });
 
+// `localVar` filter accepting two parameters
+// one is the input from the string and another is the function itself
+// the use case is {{ "some string" | gettext | localVar(object) }}
+// if the key name is "some input": "My name is {{name}}"
+// tmpl.render(localVar) will try to render it with the available variable from the
+// `localVar` object and return something like `My name is Ali`
+nunjucks.env.addFilter("localVar", function(input, data) {
+  var tmpl = new nunjucks.Template(input);
+  return tmpl.render(data);
+});
 
 if (!nunjucks.env.globals)
   nunjucks.env.globals = {};
@@ -69,12 +79,6 @@ var errHandler = function (model, xhr) {
  * Nunjucks template helper
  */
 var template = function template(name, data) {
-  // This filter intended to be used when there is a variable in the
-  // messages.json and it will re-render the return value again before
-  // it will be display on the page.
-  nunjucks.env.addFilter("instantiate", function (input) {
-    return tmpl.render(data);
-  });
   return $(nunjucks.env.render(name, $.extend(data, nunjucks.env.globals)));
 }
 

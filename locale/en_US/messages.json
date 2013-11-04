@@ -5,5 +5,5 @@
 	"remove this badge": "Do you want to remove this badge?",
 	"Cancel": "Cancel",
 	"Yes": "Yes",
-	"need to reconnect": "If so, you'd need to reconnect with the issuer (<a href='{{badge.attributes.body.badge.issuer.origin|e}}'>{{badge.attributes.body.badge.issuer.name|e}}</a>) to have this badge sent to your Backpack again."
+	"need to reconnect": "If so, you'd need to reconnect with the issuer (<a href='{{issuer.origin}}'>{{badge.attributes.body.badge.issuer.name|e}}</a>) to have this badge sent to your Backpack again."
 }
