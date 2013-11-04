@@ -13,14 +13,21 @@ $.ajaxSetup({
 if(!nunjucks.env) {
     nunjucks.env = new nunjucks.Environment(new nunjucks.HttpLoader('/views'));
 }
+
+
+// Making a custom filter to use it for the client-side l10n
+// Using this filter will help reduce the number of adding
+// variables to the global nunjucks variable.
+// The usage will be "{{ "some string" | gettext }}"
+nunjucks.env.addFilter('gettext', function (data) {
+  return Localized.get(data);
+});
+
+
 if (!nunjucks.env.globals)
   nunjucks.env.globals = {};
 $.extend(nunjucks.env.globals, {
-  csrfToken: CSRF,
-  removeThisBadge: Localized.get("remove this badge"),
-  needToReconnect: Localized.get("need to reconnect"),
-  Cancel: Localized.get("Cancel"),
-  Yes: Localized.get("Yes")
+  csrfToken: CSRF
 });
 
 nunjucks.env.addFilter('formatdate', function (rawDate) {
@@ -62,21 +69,13 @@ var errHandler = function (model, xhr) {
  * Nunjucks template helper
  */
 var template = function template(name, data) {
-  // Initialize the localized and wait till the DOM ready to use the getter method
-    Localized.ready(function(){
-      // Assign the value from the messages.json into the data object
-      // so that we can use it later in the client-side template in nunjucks
-      data.removeThisBadge = Localized.get("remove this badge");
-      console.log(data)
-      // This filter intended to be used when there is a variable in the
-      // messages.json and it will re-render the return value again before
-      // it will be display on the page.
-      nunjucks.env.addFilter("instantiate", function (input) {
-        var tmpl = new nunjucks.Template(input);
-        return tmpl.render(data);
-      });
-      return $(nunjucks.env.render(name, $.extend(data, nunjucks.env.globals)));
-    });
+  // This filter intended to be used when there is a variable in the
+  // messages.json and it will re-render the return value again before
+  // it will be display on the page.
+  nunjucks.env.addFilter("instantiate", function (input) {
+    return tmpl.render(data);
+  });
+  return $(nunjucks.env.render(name, $.extend(data, nunjucks.env.globals)));
 }
 
 // Model Definitions
