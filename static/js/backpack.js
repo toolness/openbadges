@@ -1,4 +1,4 @@
-function setup () {
+!!function setup () {
 
 var CSRF = $("input[name='_csrf']").val();
 $.ajaxSetup({
@@ -13,33 +13,11 @@ $.ajaxSetup({
 if(!nunjucks.env) {
     nunjucks.env = new nunjucks.Environment(new nunjucks.HttpLoader('/views'));
 }
-
-
-// Making a custom filter to use it for the client-side l10n
-// Using this filter will help reduce the number of adding
-// variables to the global nunjucks variable.
-// The usage will be "{{ "some string" | gettext }}"
-nunjucks.env.addFilter('gettext', function (data) {
-  return Localized.get(data);
-});
-
-// `localVar` filter accepting two parameters
-// one is the input from the string and another is the function itself
-// the use case is {{ "some string" | gettext | localVar(object) }}
-// if the key name is "some input": "My name is {{name}}"
-// tmpl.render(localVar) will try to render it with the available variable from the
-// `localVar` object and return something like `My name is Ali`
-nunjucks.env.addFilter("localVar", function(input, data) {
-  var tmpl = new nunjucks.Template(input);
-  return tmpl.render(data);
-});
-
 if (!nunjucks.env.globals)
   nunjucks.env.globals = {};
 $.extend(nunjucks.env.globals, {
   csrfToken: CSRF
 });
-
 nunjucks.env.addFilter('formatdate', function (rawDate) {
   if (parseInt(rawDate, 10) == rawDate) {
     var date = new Date(rawDate * 1000);
@@ -47,9 +25,10 @@ nunjucks.env.addFilter('formatdate', function (rawDate) {
   }
   return rawDate;
 });
-}
+}(/*end setup*/)
 
-function appInitialize (){
+
+!!function appInitialize (){
 
 var global = {
   dragging: false
@@ -79,7 +58,7 @@ var errHandler = function (model, xhr) {
  * Nunjucks template helper
  */
 var template = function template(name, data) {
-  return $(nunjucks.env.render(name, $.extend(data, nunjucks.env.globals)));
+    return $(nunjucks.env.render(name, $.extend(data, nunjucks.env.globals)));
 }
 
 // Model Definitions
@@ -94,9 +73,9 @@ Badge.Model = Backbone.Model.extend({
       // new Date(year, month [, date [, hours[, minutes[, seconds[, ms]]]]])
       return new Date(parts[0], parts[1]-1, parts[2]); // months are 0-based
     }
-
+    
     var expiry = parseDate(this.attributes.body.expires).getTime();
-
+    
     return Date.now() - expiry > 0;
   }
 });
@@ -421,9 +400,9 @@ Details.View = Backbone.View.extend({
   },
 
   render: function () {
-    this.el = template('badge-details.html', {
-      badge: {
-        attributes: this.model.attributes
+    this.el = template('badge-details.html', { 
+      badge: { 
+        attributes: this.model.attributes 
       },
       disownable: true
     });
@@ -622,12 +601,4 @@ _.each(existingGroups, Group.fromElement);
 
 window.Badge = Badge;
 //end app scope
-}
-
-// The DOM needs to be ready in order to use the Localized.get()
-// therefore we need to call the setup() and appInitialize() after
-// the DOM is ready.
-Localized.ready(function(){
-  setup();
-  appInitialize();
-});
+}();

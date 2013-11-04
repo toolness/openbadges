@@ -17,6 +17,7 @@ var flash = require('connect-flash');
 var nunjucks = require('nunjucks');
 var _ = require('underscore');
 var i18n = require('webmaker-i18n');
+var InlineL10nViews = require('./lib/inline-l10n-views');
 
 var app = express();
 app.logger = logger;
@@ -57,9 +58,7 @@ env.addFilter('formatdate', function (rawDate) {
 // ------------------------------------
 app.use(middleware.less(app.get('env')));
 app.use(express.static(path.join(__dirname, "static")));
-app.use("/views", express.static(path.join(__dirname, "views")));
 app.use(middleware.staticTemplateViews(env, 'static/'));
-app.use( "/bower", express.static( path.join(__dirname, "bower_components" )));
 
 // Setup locales with i18n
 app.use( i18n.middleware({
@@ -71,6 +70,7 @@ app.use( i18n.middleware({
   translation_directory: path.resolve( __dirname, "locale" )
 }));
 
+app.use("/views", InlineL10nViews(path.join(__dirname, "views")));
 app.use(middleware.noFrame({ whitelist: [ '/issuer/frame.*', '/', '/share/.*' ] }));
 app.use(express.bodyParser());
 app.use(express.cookieParser());
@@ -188,9 +188,6 @@ app.post('/api/issue', backpackConnect.authorize("issue"),
                        issuer.issuerBadgeAddFromAssertion);
 app.get('/api/identity', backpackConnect.authorize("issue"),
                          backpackConnect.hashIdentity());
-
-// Setting up a route for the client-side usage
-app.get('/strings/:lang?', i18n.stringsRoute('en-US'));
 
 if (!module.parent) {
   var start_server = function start_server(app) {

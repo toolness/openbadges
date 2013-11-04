@@ -28,5 +28,3 @@
 
 /static/css/*.css
 /static/js/nunjucks-templates.js
-/offline
-bower_components
