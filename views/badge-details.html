@@ -9,7 +9,7 @@
       <div class='confirm-disown'>
         <p> {{ "remove this badge" | gettext }}
         </p>
-        <p> {{ "need to reconnect" | gettext | instantiate }}
+        <p> {{ "need to reconnect" | gettext | localVar(badge.attributes.body.badge.issuer.origin) }}
         </p>
 
         <div class='buttons'>
